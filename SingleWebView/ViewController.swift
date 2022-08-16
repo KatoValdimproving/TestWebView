@@ -48,7 +48,7 @@ class ViewController: UIViewController {
         //Load AD request
         HTTPCookieStorage.shared.cookieAcceptPolicy = .always
         
-        let url = URL(string: "https://www.google.com")!
+        let url = URL(string: "https://untrusted-root.badssl.com/")!
         webView?.load(URLRequest(url: url))
         webView?.allowsBackForwardNavigationGestures = true
     }
@@ -69,6 +69,11 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: WKNavigationDelegate {
+    
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+        completionHandler(.useCredential, cred)
+      }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.activityIndicatorView?.startAnimating()
